@@ -140,8 +140,8 @@ INSERT INTO public.settings (key, value) VALUES
   ('telegram_url', ''),
   ('referral_bonus_amount', '5000'),
   ('rpc_price', '6700'),
-  ('moniepoint_account_number', '5569742889'),
-  ('moniepoint_account_name', 'Sunday Liberty'),
+  ('moniepoint_account_number', '6488400047'),
+  ('moniepoint_account_name', 'Nnanna Joseph'),
   ('bank_name', 'Moniepoint')
 ON CONFLICT (key) DO NOTHING;
 
