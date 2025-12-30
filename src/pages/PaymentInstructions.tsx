@@ -20,7 +20,7 @@ const PaymentInstructions = () => {
 
   const amount = "6,700";
   const accountNumber = "8151889909";
-  const bankName = "Nombank Microfinance Bank";
+  const bankName = "Palmpay Limited";
   const accountName = "NNANNA JOSEPH ";
   const referenceId = `REF${Date.now()}`;
 
