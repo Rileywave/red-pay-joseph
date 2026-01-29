@@ -140,9 +140,9 @@ INSERT INTO public.settings (key, value) VALUES
   ('telegram_url', ''),
   ('referral_bonus_amount', '5000'),
   ('rpc_price', '6700'),
-  ('Moniepoint_account_number', '6534338917'),
-  ('Moniepoint_account_name', 'UZOMBAH WISDOM GINIKACHI'),
-  ('bank_name', 'Moniepoint MFB')
+  ('paga_account_number', '0051857178'),
+  ('paga_account_name', 'NNANNA JOSEPH'),
+  ('bank_name', 'PAGA')
 ON CONFLICT (key) DO NOTHING;
 
 ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
