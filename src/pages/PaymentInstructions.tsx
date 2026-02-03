@@ -27,17 +27,17 @@ const PaymentInstructions = () => {
   const bankName = "PAGA";
   const accountName = "NNANNA JOSEPH";
 
-  // ✅ Generate reference ONCE
+  // Generate reference ONCE
   const [referenceId] = useState(() => `REF${Date.now()}`);
 
-  // ✅ Reset timer when pending starts
+  // Reset timer when pending starts
   useEffect(() => {
     if (showPending) {
       setTimeLeft(SIX_MINUTES);
     }
   }, [showPending]);
 
-  // ✅ Countdown timer
+  // Countdown timer
   useEffect(() => {
     if (!showPending) return;
 
@@ -107,7 +107,7 @@ const PaymentInstructions = () => {
 
   const handleGoToDashboard = () => navigate("/dashboard");
 
-  // ✅ Pending Screen
+  // Pending Screen
   if (showPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#120505] to-black px-4">
@@ -137,8 +137,9 @@ const PaymentInstructions = () => {
               ⚡ For faster confirmation, contact support!
             </p>
 
+            {/* ✅ FIXED TELEGRAM LINK */}
             <a
-              href="https://t.me/Redpaywebsupport"
+              href="https://telegram.me/Redpaywebsupport"
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full rounded-xl bg-blue-500 py-3 text-white font-semibold hover:bg-blue-600 transition"
@@ -169,7 +170,7 @@ const PaymentInstructions = () => {
     );
   }
 
-  // ✅ Loading State
+  // Loading State
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center relative">
@@ -181,7 +182,7 @@ const PaymentInstructions = () => {
     );
   }
 
-  // ✅ Payment Instructions
+  // Payment Instructions
   return (
     <div className="min-h-screen relative">
       <LiquidBackground />
@@ -194,7 +195,9 @@ const PaymentInstructions = () => {
       <main className="relative z-10 px-3 py-4 max-w-4xl mx-auto space-y-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Payment Instructions</h1>
-          <p className="text-sm text-muted-foreground">Transfer to the account below</p>
+          <p className="text-sm text-muted-foreground">
+            Transfer to the account below
+          </p>
         </div>
 
         <Card className="bg-card/60 backdrop-blur-sm">
@@ -208,9 +211,13 @@ const PaymentInstructions = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => copyToClipboard(amount.replace(",", ""), "Amount")}
+                onClick={() =>
+                  copyToClipboard(amount.replace(",", ""), "Amount")
+                }
               >
-                {copied === "Amount" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied === "Amount"
+                  ? <Check className="w-4 h-4" />
+                  : <Copy className="w-4 h-4" />}
               </Button>
             </div>
 
@@ -223,14 +230,20 @@ const PaymentInstructions = () => {
               <div className="p-3 bg-secondary/20 rounded-lg flex justify-between items-center">
                 <div>
                   <p className="text-xs text-muted-foreground">Account Number</p>
-                  <p className="font-mono text-lg font-bold">{accountNumber}</p>
+                  <p className="font-mono text-lg font-bold">
+                    {accountNumber}
+                  </p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => copyToClipboard(accountNumber, "Account Number")}
+                  onClick={() =>
+                    copyToClipboard(accountNumber, "Account Number")
+                  }
                 >
-                  {copied === "Account Number" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copied === "Account Number"
+                    ? <Check className="w-4 h-4" />
+                    : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
 
@@ -247,14 +260,18 @@ const PaymentInstructions = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => copyToClipboard(referenceId, "Reference")}
+                  onClick={() =>
+                    copyToClipboard(referenceId, "Reference")
+                  }
                 >
-                  {copied === "Reference" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copied === "Reference"
+                    ? <Check className="w-4 h-4" />
+                    : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
             </div>
 
-            {/* ✅ FIXED UPLOAD */}
+            {/* Upload Screenshot */}
             <div className="space-y-2">
               <Label>Upload Payment Screenshot</Label>
 
@@ -268,8 +285,12 @@ const PaymentInstructions = () => {
 
                 <div className="flex flex-col items-center gap-2 pointer-events-none">
                   <Upload className="w-8 h-8 text-primary" />
-                  <p className="text-sm font-medium">Click to upload payment proof</p>
-                  <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
+                  <p className="text-sm font-medium">
+                    Click to upload payment proof
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    PNG, JPG up to 5MB
+                  </p>
                 </div>
               </div>
 
