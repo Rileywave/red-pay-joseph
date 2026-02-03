@@ -77,7 +77,7 @@ const PaymentInstructions = () => {
 
     const file = e.target.files[0];
     const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       toast.error("Only JPG, PNG, and WEBP images are allowed");
@@ -254,16 +254,19 @@ const PaymentInstructions = () => {
               </div>
             </div>
 
+            {/* ✅ FIXED UPLOAD */}
             <div className="space-y-2">
               <Label>Upload Payment Screenshot</Label>
-              <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 bg-primary/5">
+
+              <div className="relative border-2 border-dashed border-primary/30 rounded-lg p-6 bg-primary/5 hover:bg-primary/10 transition">
                 <Input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
                   onChange={handleFileChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
-                <div className="flex flex-col items-center gap-2">
+
+                <div className="flex flex-col items-center gap-2 pointer-events-none">
                   <Upload className="w-8 h-8 text-primary" />
                   <p className="text-sm font-medium">Click to upload payment proof</p>
                   <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
