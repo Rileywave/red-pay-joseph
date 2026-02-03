@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,8 +8,10 @@ import LiquidBackground from "@/components/LiquidBackground";
 import Logo from "@/components/Logo";
 import ProfileButton from "@/components/ProfileButton";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { Copy, Check, Upload } from "lucide-react";
+import { Copy, Check, Upload, Clock } from "lucide-react"; // ✅ Added Clock
 import { toast } from "sonner";
+
+const SIX_HOURS = 6 * 60 * 60; // 6 hours in seconds
 
 const PaymentInstructions = () => {
   const navigate = useNavigate();
@@ -17,12 +19,35 @@ const PaymentInstructions = () => {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [showFailure, setShowFailure] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(SIX_HOURS); // ✅ countdown timer
 
   const amount = "6,700";
   const accountNumber = "0051857178";
   const bankName = "PAGA";
   const accountName = "NNANNA JOSEPH";
   const referenceId = `REF${Date.now()}`;
+
+  // ✅ Countdown timer effect
+  useEffect(() => {
+    if (!showFailure) return;
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [showFailure]);
+
+  const formatTime = (seconds: number) => {
+    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  };
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -34,21 +59,16 @@ const PaymentInstructions = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      
-      // Validate file type
       const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
       if (!ALLOWED_TYPES.includes(file.type)) {
         toast.error('Only JPG, PNG, and WEBP images are allowed');
         return;
       }
-      
-      // Validate file size (5MB max)
       const MAX_FILE_SIZE = 5 * 1024 * 1024;
       if (file.size > MAX_FILE_SIZE) {
         toast.error('File must be less than 5MB');
         return;
       }
-      
       setScreenshot(file);
       toast.success("Screenshot uploaded!");
     }
@@ -59,21 +79,15 @@ const PaymentInstructions = () => {
       toast.error("Please upload payment screenshot");
       return;
     }
-
     setLoading(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     setLoading(false);
     setShowFailure(true);
   };
 
-  const handleContactSupport = () => {
-    navigate("/support");
-  };
+  const handleGoToDashboard = () => navigate("/dashboard");
 
-  const handleGoToDashboard = () => {
-    navigate("/dashboard");
-  };
-
+  // ✅ Pending Page UI
   if (showFailure) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#120505] to-black px-4">
@@ -100,7 +114,7 @@ const PaymentInstructions = () => {
           <div className="rounded-xl border border-red-500/30 bg-red-500/10 py-4">
             <p className="text-xs text-gray-400 mb-1">Time remaining</p>
             <p className="text-2xl font-bold text-red-500">
-              06:00:00
+              {formatTime(timeLeft)}
             </p>
           </div>
 
@@ -129,6 +143,7 @@ const PaymentInstructions = () => {
     );
   }
 
+  // ✅ Loading state
   if (loading) {
     return (
       <div className="min-h-screen w-full relative flex items-center justify-center">
@@ -140,6 +155,7 @@ const PaymentInstructions = () => {
     );
   }
 
+  // ✅ Original Payment Instructions UI
   return (
     <div className="min-h-screen w-full relative">
       <LiquidBackground />
