@@ -74,57 +74,61 @@ const PaymentInstructions = () => {
     navigate("/dashboard");
   };
 
-  if (showFailure) {
-    return (
-      <div className="min-h-screen w-full relative flex items-center justify-center">
-        <LiquidBackground />
-        <Card className="relative z-10 bg-card/80 backdrop-blur-sm border-border animate-scale-in max-w-md mx-3">
-          <CardContent className="p-8 text-center space-y-6">
-            <div className="w-20 h-20 bg-destructive/20 rounded-full flex items-center justify-center mx-auto">
-              <div className="w-16 h-16 bg-destructive rounded-full flex items-center justify-center">
-                <span className="text-destructive-foreground text-4xl font-light">✕</span>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-destructive">Transaction verification failed!</h2>
-              <p className="text-sm text-muted-foreground">
-                Your payment could not be completed. Reason: No Payment received from you/invalid payment method. 
-                If you have made the payment kindly send payment proof to our support team below
-              </p>
-            </div>
+if (showFailure) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#120505] to-black px-4">
+      <div className="w-full max-w-md rounded-2xl bg-black/70 backdrop-blur-md border border-red-500/20 shadow-2xl p-8 text-center space-y-6">
 
-            <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 flex items-center justify-between">
-              <span className="text-sm text-foreground">Invalid Payment</span>
-              <div className="w-6 h-6 rounded-full border-2 border-destructive flex items-center justify-center">
-                <span className="text-destructive text-lg font-light">✕</span>
-              </div>
-            </div>
+        {/* Icon */}
+        <div className="mx-auto w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center">
+          <Clock className="w-10 h-10 text-red-500 animate-pulse" />
+        </div>
 
-            <div className="space-y-3">
-              <Button 
-                onClick={handleGoToDashboard}
-                variant="outline"
-                className="w-full" 
-                size="lg"
-              >
-                Go to Dashboard
-              </Button>
-              
-              <Button 
-                onClick={handleContactSupport}
-                className="w-full bg-[#1DA1F2] hover:bg-[#1DA1F2]/90 text-white" 
-                size="lg"
-              >
-                <span className="mr-2">✈</span>
-                Contact Support
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Title */}
+        <h1 className="text-3xl font-bold text-red-500">
+          Transaction Pending
+        </h1>
+
+        {/* Message */}
+        <p className="text-sm text-gray-400 leading-relaxed">
+          Your transaction is currently under verification.
+          This process can take up to <span className="text-red-400 font-semibold">6 hours</span>.
+          If you have already made payment, kindly contact support.
+        </p>
+
+        {/* Timer */}
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 py-4">
+          <p className="text-xs text-gray-400 mb-1">Time remaining</p>
+          <p className="text-2xl font-bold text-red-500">
+            06:00:00
+          </p>
+        </div>
+
+        {/* Buttons */}
+        <div className="space-y-3">
+          <Button 
+            onClick={handleGoToDashboard}
+            variant="outline"
+            className="w-full" 
+            size="lg"
+          >
+            Go to Dashboard
+          </Button>
+
+          <a
+            href="https://t.me/Redpaywebsupport"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full rounded-xl bg-blue-500 py-3 text-white font-semibold hover:bg-blue-600 transition"
+          >
+            ✈️ Contact Support
+          </a>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   if (loading) {
     return (
