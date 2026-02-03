@@ -8,18 +8,19 @@ import LiquidBackground from "@/components/LiquidBackground";
 import Logo from "@/components/Logo";
 import ProfileButton from "@/components/ProfileButton";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { Copy, Check, Upload, Clock } from "lucide-react"; // ✅ Added Clock
+import { Copy, Check, Upload, Clock } from "lucide-react"; 
 import { toast } from "sonner";
 
-const SIX_HOURS = 6 * 60 * 60; // 6 hours in seconds
+// ✅ 6 minutes in seconds
+const SIX_MINUTES = 6 * 60;
 
 const PaymentInstructions = () => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState<string>("");
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showFailure, setShowFailure] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(SIX_HOURS); // ✅ countdown timer
+  const [showPending, setShowPending] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(SIX_MINUTES);
 
   const amount = "6,700";
   const accountNumber = "0051857178";
@@ -29,7 +30,7 @@ const PaymentInstructions = () => {
 
   // ✅ Countdown timer effect
   useEffect(() => {
-    if (!showFailure) return;
+    if (!showPending) return;
     const interval = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -40,13 +41,12 @@ const PaymentInstructions = () => {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [showFailure]);
+  }, [showPending]);
 
   const formatTime = (seconds: number) => {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
     const s = String(seconds % 60).padStart(2, "0");
-    return `${h}:${m}:${s}`;
+    return `${m}:${s}`;
   };
 
   const copyToClipboard = (text: string, field: string) => {
@@ -82,13 +82,13 @@ const PaymentInstructions = () => {
     setLoading(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     setLoading(false);
-    setShowFailure(true);
+    setShowPending(true); // ✅ show pending page instead of failure
   };
 
   const handleGoToDashboard = () => navigate("/dashboard");
 
   // ✅ Pending Page UI
-  if (showFailure) {
+  if (showPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#120505] to-black px-4">
         <div className="w-full max-w-md rounded-2xl bg-black/70 backdrop-blur-md border border-red-500/20 shadow-2xl p-8 text-center space-y-6">
@@ -105,9 +105,9 @@ const PaymentInstructions = () => {
 
           {/* Message */}
           <p className="text-sm text-gray-400 leading-relaxed">
-            Your transaction is currently under verification.
-            This process can take up to <span className="text-red-400 font-semibold">6 hours</span>.
-            If you have already made payment, kindly contact support.
+            Your transaction is under verification. 
+            This usually takes a few minutes. 
+            <span className="text-red-400 font-semibold"> For faster confirmation, contact support!</span>
           </p>
 
           {/* Timer */}
