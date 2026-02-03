@@ -74,61 +74,60 @@ const PaymentInstructions = () => {
     navigate("/dashboard");
   };
 
-if (showFailure) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#120505] to-black px-4">
-      <div className="w-full max-w-md rounded-2xl bg-black/70 backdrop-blur-md border border-red-500/20 shadow-2xl p-8 text-center space-y-6">
+  if (showFailure) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#120505] to-black px-4">
+        <div className="w-full max-w-md rounded-2xl bg-black/70 backdrop-blur-md border border-red-500/20 shadow-2xl p-8 text-center space-y-6">
 
-        {/* Icon */}
-        <div className="mx-auto w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center">
-          <Clock className="w-10 h-10 text-red-500 animate-pulse" />
-        </div>
+          {/* Icon */}
+          <div className="mx-auto w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center">
+            <Clock className="w-10 h-10 text-red-500 animate-pulse" />
+          </div>
 
-        {/* Title */}
-        <h1 className="text-3xl font-bold text-red-500">
-          Transaction Pending
-        </h1>
+          {/* Title */}
+          <h1 className="text-3xl font-bold text-red-500">
+            Transaction Pending
+          </h1>
 
-        {/* Message */}
-        <p className="text-sm text-gray-400 leading-relaxed">
-          Your transaction is currently under verification.
-          This process can take up to <span className="text-red-400 font-semibold">6 hours</span>.
-          If you have already made payment, kindly contact support.
-        </p>
-
-        {/* Timer */}
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 py-4">
-          <p className="text-xs text-gray-400 mb-1">Time remaining</p>
-          <p className="text-2xl font-bold text-red-500">
-            06:00:00
+          {/* Message */}
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Your transaction is currently under verification.
+            This process can take up to <span className="text-red-400 font-semibold">6 hours</span>.
+            If you have already made payment, kindly contact support.
           </p>
-        </div>
 
-        {/* Buttons */}
-        <div className="space-y-3">
-          <Button 
-            onClick={handleGoToDashboard}
-            variant="outline"
-            className="w-full" 
-            size="lg"
-          >
-            Go to Dashboard
-          </Button>
+          {/* Timer */}
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 py-4">
+            <p className="text-xs text-gray-400 mb-1">Time remaining</p>
+            <p className="text-2xl font-bold text-red-500">
+              06:00:00
+            </p>
+          </div>
 
-          <a
-            href="https://t.me/Redpaywebsupport"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full rounded-xl bg-blue-500 py-3 text-white font-semibold hover:bg-blue-600 transition"
-          >
-            ✈️ Contact Support
-          </a>
+          {/* Buttons */}
+          <div className="space-y-3">
+            <Button 
+              onClick={handleGoToDashboard}
+              variant="outline"
+              className="w-full" 
+              size="lg"
+            >
+              Go to Dashboard
+            </Button>
+
+            <a
+              href="https://t.me/Redpaywebsupport"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full rounded-xl bg-blue-500 py-3 text-white font-semibold hover:bg-blue-600 transition"
+            >
+              ✈️ Contact Support
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
 
   if (loading) {
     return (
