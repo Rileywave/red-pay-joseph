@@ -1,321 +1,343 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import LiquidBackground from "@/components/LiquidBackground";
-import Logo from "@/components/Logo";
-import ProfileButton from "@/components/ProfileButton";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import { Copy, Check, Upload, Clock } from "lucide-react";
-import { toast } from "sonner";
+import React, { useState, useEffect } from "react";
+import { 
+  Copy, 
+  Check, 
+  Upload, 
+  Clock, 
+  User, 
+  ShieldCheck, 
+  AlertCircle,
+  ExternalLink,
+  ChevronLeft,
+  LifeBuoy,
+  LayoutDashboard,
+  ArrowRight
+} from "lucide-react";
 
+/** * POLISHED UI COMPONENTS (Local implementations for portability)
+ */
+const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
+  const base = "inline-flex items-center justify-center rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none gap-2";
+  const variants = {
+    primary: "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-900/20",
+    outline: "border border-red-500/30 text-red-500 hover:bg-red-500/10",
+    secondary: "bg-zinc-800 text-zinc-100 hover:bg-zinc-700",
+    ghost: "text-zinc-400 hover:text-white hover:bg-white/10",
+    blue: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-900/20"
+  };
+  const sizes = {
+    sm: "px-3 py-1.5 text-xs",
+    md: "px-5 py-2.5 text-sm",
+    lg: "px-6 py-4 text-base w-full"
+  };
+  return (
+    <button className={`${base} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>
+      {children}
+    </button>
+  );
+};
+
+const Card = ({ children, className = "" }) => (
+  <div className={`bg-zinc-900/60 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl ${className}`}>
+    {children}
+  </div>
+);
+
+const Toast = ({ message, type = "success", visible, onClose }) => {
+  useEffect(() => {
+    if (visible) {
+      const timer = setTimeout(onClose, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [visible, onClose]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
+      <div className={`px-5 py-3 rounded-2xl flex items-center gap-3 text-sm font-bold shadow-2xl border ${
+        type === "success" ? "bg-zinc-900 border-green-500/50 text-green-500" : "bg-zinc-900 border-red-500/50 text-red-500"
+      }`}>
+        {type === "success" ? <Check size={18} /> : <AlertCircle size={18} />}
+        {message}
+      </div>
+    </div>
+  );
+};
+
+const LiquidBackground = () => (
+  <div className="fixed inset-0 -z-10 bg-black overflow-hidden">
+    <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-red-900/20 rounded-full blur-[120px] animate-pulse opacity-50" />
+    <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-zinc-900/40 rounded-full blur-[120px] opacity-50" />
+    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 contrast-150 brightness-50" />
+  </div>
+);
+
+/**
+ * MAIN LOGIC
+ */
 const SIX_MINUTES = 6 * 60;
 
-const PaymentInstructions = () => {
-  const navigate = useNavigate();
-
-  const [copied, setCopied] = useState<string>("");
-  const [screenshot, setScreenshot] = useState<File | null>(null);
+export default function App() {
+  const [copied, setCopied] = useState("");
+  const [screenshot, setScreenshot] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPending, setShowPending] = useState(false);
   const [timeLeft, setTimeLeft] = useState(SIX_MINUTES);
+  const [toast, setToast] = useState({ message: "", type: "success", visible: false });
+  const [referenceId] = useState(() => `RP-${Math.floor(100000 + Math.random() * 900000)}`);
 
-  const amount = "6,700";
-  const accountNumber = "0051857178";
-  const bankName = "PAGA";
-  const accountName = "NNANNA JOSEPH";
-
-  // Generate reference ONCE
-  const [referenceId] = useState(() => `REF${Date.now()}`);
-
-  // Reset timer when pending starts
+  // ✅ Countdown timer
   useEffect(() => {
-    if (showPending) {
-      setTimeLeft(SIX_MINUTES);
-    }
-  }, [showPending]);
-
-  // Countdown timer
-  useEffect(() => {
-    if (!showPending) return;
-
+    if (!showPending || timeLeft <= 0) return;
     const interval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft(prev => prev - 1);
     }, 1000);
-
     return () => clearInterval(interval);
+  }, [showPending, timeLeft]);
+
+  // ✅ Timer Reset
+  useEffect(() => {
+    if (showPending) setTimeLeft(SIX_MINUTES);
   }, [showPending]);
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds) => {
     const m = String(Math.floor(seconds / 60)).padStart(2, "0");
     const s = String(seconds % 60).padStart(2, "0");
     return `${m}:${s}`;
   };
 
-  const copyToClipboard = (text: string, field: string) => {
-    if (!navigator.clipboard) {
-      toast.error("Clipboard not supported");
-      return;
-    }
-
-    navigator.clipboard.writeText(text);
+  const copyToClipboard = (text, field) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
     setCopied(field);
-    toast.success(`${field} copied!`);
+    setToast({ message: `${field} copied!`, type: "success", visible: true });
     setTimeout(() => setCopied(""), 2000);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.[0]) return;
-
-    const file = e.target.files[0];
-    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-    const MAX_FILE_SIZE = 5 * 1024 * 1024;
-
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.error("Only JPG, PNG, and WEBP images are allowed");
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setToast({ message: "Use JPG, PNG, or WEBP", type: "error", visible: true });
       return;
     }
-
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error("File must be less than 5MB");
+    if (file.size > 5 * 1024 * 1024) {
+      setToast({ message: "File exceeds 5MB limit", type: "error", visible: true });
       return;
     }
-
+    
     setScreenshot(file);
-    toast.success("Screenshot uploaded!");
+    setToast({ message: "Screenshot ready!", type: "success", visible: true });
   };
 
   const handlePaymentConfirm = async () => {
     if (!screenshot) {
-      toast.error("Please upload payment screenshot");
+      setToast({ message: "Please upload payment proof", type: "error", visible: true });
       return;
     }
-
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(r => setTimeout(r, 2000));
     setLoading(false);
     setShowPending(true);
   };
 
-  const handleGoToDashboard = () => navigate("/dashboard");
-
-  // Pending Screen
+  // ✅ SUB-VIEW: PENDING SCREEN
   if (showPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#120505] to-black px-4">
-        <div className="w-full max-w-md rounded-2xl bg-black/70 backdrop-blur-md border border-red-500/20 shadow-2xl p-8 text-center space-y-6">
-
-          <div className="mx-auto w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center">
-            <Clock className="w-10 h-10 text-red-500 animate-pulse" />
+      <div className="min-h-screen flex items-center justify-center p-4 relative animate-in fade-in duration-500">
+        <LiquidBackground />
+        <Card className="w-full max-w-md p-8 text-center space-y-8">
+          <div className="mx-auto w-24 h-24 rounded-3xl bg-red-500/10 flex items-center justify-center border border-red-500/20 rotate-12 transition-transform hover:rotate-0">
+            <Clock className="w-12 h-12 text-red-500 animate-pulse" />
           </div>
 
-          <h1 className="text-3xl font-bold text-red-500">
-            Transaction Pending
-          </h1>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-extrabold text-white tracking-tight">Processing...</h1>
+            <p className="text-zinc-500 text-sm">
+              Your transfer is being verified. Your code will be generated automatically.
+            </p>
+          </div>
 
-          <p className="text-sm text-gray-400">
-            Your transaction is under verification. This usually takes a few minutes.
-          </p>
-
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 py-4">
-            <p className="text-xs text-gray-400 mb-1">Time remaining</p>
-            <p className="text-2xl font-bold text-red-500">
+          <div className="p-6 rounded-3xl bg-red-500/5 border border-red-500/10 flex flex-col items-center">
+            <p className="text-[10px] text-red-500/60 uppercase font-black tracking-widest mb-2">Estimated Verification</p>
+            <p className="text-5xl font-mono font-black text-red-500 tracking-tighter tabular-nums">
               {formatTime(timeLeft)}
             </p>
           </div>
 
-          <div className="space-y-3">
-            <p className="text-sm text-yellow-400 font-semibold">
-              ⚡ For faster confirmation, contact support!
-            </p>
+          <div className="w-full space-y-4">
+            {/* UNIGNORABLE SUPPORT SECTION */}
+            <div className="relative group overflow-hidden rounded-3xl p-1">
+              {/* Pulsing Gradient Background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 animate-pulse opacity-100" />
+              
+              <div className="relative bg-zinc-950 rounded-[20px] p-6 flex flex-col items-center text-center gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center gap-2 text-amber-500 font-black uppercase text-xs tracking-widest mb-1">
+                    <AlertCircle size={16} className="animate-bounce" /> Priority Action
+                  </div>
+                  <h3 className="text-white font-extrabold text-xl leading-tight">
+                    For faster confirmation contact support
+                  </h3>
+                </div>
 
-            {/* ✅ FIXED TELEGRAM LINK */}
-            <a
-              href="https://telegram.me/Redpaywebsupport"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full rounded-xl bg-blue-500 py-3 text-white font-semibold hover:bg-blue-600 transition"
-            >
-              ✈️ Telegram Support
-            </a>
+                <Button 
+                  variant="primary" 
+                  size="lg" 
+                  onClick={() => console.log('Support')}
+                  className="w-full bg-amber-500 hover:bg-amber-400 text-black font-black text-lg border-none shadow-xl shadow-amber-500/20 h-14"
+                >
+                  CONTACT SUPPORT NOW
+                </Button>
+              </div>
+            </div>
 
-            <a
-              href="https://wa.me/2347019895358"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full rounded-xl bg-green-500 py-3 text-white font-semibold hover:bg-green-600 transition"
-            >
-              📱 WhatsApp Support
-            </a>
-
-            <Button
-              onClick={handleGoToDashboard}
-              variant="outline"
-              className="w-full"
-              size="lg"
-            >
-              Go to Dashboard
+            <Button variant="ghost" size="lg" onClick={() => window.location.reload()}>
+              <LayoutDashboard size={20} /> Dashboard
             </Button>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
 
-  // Loading State
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center relative">
-        <LiquidBackground />
-        <div className="relative z-10">
-          <LoadingSpinner message="Verifying Payment" />
-        </div>
-      </div>
-    );
-  }
-
-  // Payment Instructions
+  // ✅ MAIN VIEW: INSTRUCTIONS
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen text-white relative flex flex-col">
       <LiquidBackground />
+      <Toast {...toast} onClose={() => setToast(p => ({ ...p, visible: false }))} />
 
-      <header className="relative z-10 px-3 py-2 flex items-center justify-between border-b border-border/20 bg-card/30 backdrop-blur-sm">
-        <Logo />
-        <ProfileButton />
+      {/* Header */}
+      <header className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-xl sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-red-600/30">R</div>
+          <span className="font-black text-xl tracking-tighter">REDPAY</span>
+        </div>
+        <button className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center border border-white/10 text-zinc-400 hover:text-white transition-colors">
+          <User size={20} />
+        </button>
       </header>
 
-      <main className="relative z-10 px-3 py-4 max-w-4xl mx-auto space-y-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Payment Instructions</h1>
-          <p className="text-sm text-muted-foreground">
-            Transfer to the account below
-          </p>
+      {loading ? (
+        <div className="flex-1 flex flex-col items-center justify-center gap-6">
+          <div className="relative">
+            <div className="w-20 h-20 border-4 border-red-500/20 rounded-full" />
+            <div className="w-20 h-20 border-4 border-t-red-500 rounded-full animate-spin absolute inset-0" />
+          </div>
+          <div className="text-center animate-pulse">
+            <h2 className="text-xl font-bold">Verifying Receipt</h2>
+            <p className="text-zinc-500 text-sm">Validating payment hash...</p>
+          </div>
         </div>
+      ) : (
+        <main className="flex-1 max-w-xl mx-auto w-full px-4 py-8 space-y-8 animate-in slide-in-from-bottom-2 duration-500">
+          <div className="space-y-1">
+            <button className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest mb-4">
+              <ChevronLeft size={16} /> Previous
+            </button>
+            <h1 className="text-4xl font-black tracking-tighter">Secure Deposit</h1>
+            <p className="text-zinc-500 font-medium">Follow the instructions to credit your wallet.</p>
+          </div>
 
-        <Card className="bg-card/60 backdrop-blur-sm">
-          <CardContent className="p-4 space-y-4">
-
-            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex justify-between items-center">
-              <div>
-                <p className="text-xs text-muted-foreground">Amount to Pay</p>
-                <p className="text-3xl font-bold text-primary">₦{amount}</p>
+          {/* Amount Hero */}
+          <Card className="p-8 bg-gradient-to-br from-red-600/10 to-transparent border-red-500/30">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] text-red-500 font-black uppercase tracking-[0.2em]">Total Payable</p>
+                <div className="text-5xl font-black tracking-tighter">₦6,700</div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  copyToClipboard(amount.replace(",", ""), "Amount")
-                }
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-full w-10 h-10 p-0"
+                onClick={() => copyToClipboard("6700", "Amount")}
               >
-                {copied === "Amount"
-                  ? <Check className="w-4 h-4" />
-                  : <Copy className="w-4 h-4" />}
+                {copied === "Amount" ? <Check size={18} /> : <Copy size={18} />}
               </Button>
             </div>
+            <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between text-zinc-500">
+              <span className="text-[10px] font-bold uppercase tracking-widest">Transaction Fee</span>
+              <span className="text-xs font-bold text-white">₦0.00</span>
+            </div>
+          </Card>
 
-            <div className="space-y-3">
-              <div className="p-3 bg-secondary/20 rounded-lg">
-                <p className="text-xs text-muted-foreground">Bank Name</p>
-                <p className="font-semibold">{bankName}</p>
-              </div>
-
-              <div className="p-3 bg-secondary/20 rounded-lg flex justify-between items-center">
-                <div>
-                  <p className="text-xs text-muted-foreground">Account Number</p>
-                  <p className="font-mono text-lg font-bold">
-                    {accountNumber}
+          {/* Bank Details */}
+          <div className="space-y-3">
+            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest ml-1">Beneficiary Account</p>
+            {[
+              { label: "Bank", value: "PAGA", copy: false },
+              { label: "Account Number", value: "0051857178", copy: true, large: true },
+              { label: "Account Name", value: "NNANNA JOSEPH", copy: false },
+              { label: "Reference", value: referenceId, copy: true, mono: true }
+            ].map((item, idx) => (
+              <div key={idx} className="group flex items-center justify-between p-5 bg-zinc-900/40 border border-white/5 rounded-3xl hover:border-white/20 transition-all">
+                <div className="space-y-1">
+                  <p className="text-[9px] text-zinc-600 font-black uppercase tracking-wider">{item.label}</p>
+                  <p className={`${item.large ? "text-xl" : "text-base"} ${item.mono ? "font-mono text-red-500 text-sm" : "text-zinc-100"} font-bold`}>
+                    {item.value}
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    copyToClipboard(accountNumber, "Account Number")
-                  }
-                >
-                  {copied === "Account Number"
-                    ? <Check className="w-4 h-4" />
-                    : <Copy className="w-4 h-4" />}
-                </Button>
+                {item.copy && (
+                  <button 
+                    onClick={() => copyToClipboard(item.value, item.label)}
+                    className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    {copied === item.label ? <Check size={20} className="text-green-500" /> : <Copy size={20} />}
+                  </button>
+                )}
               </div>
+            ))}
+          </div>
 
-              <div className="p-3 bg-secondary/20 rounded-lg">
-                <p className="text-xs text-muted-foreground">Account Name</p>
-                <p className="font-semibold">{accountName}</p>
-              </div>
-
-              <div className="p-3 bg-secondary/20 rounded-lg flex justify-between items-center">
-                <div>
-                  <p className="text-xs text-muted-foreground">Reference ID</p>
-                  <p className="font-mono text-sm">{referenceId}</p>
+          {/* Proof Upload */}
+          <div className="space-y-4">
+            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest ml-1">Payment Verification</p>
+            <div className={`relative border-2 border-dashed rounded-[2rem] p-10 transition-all group overflow-hidden ${
+              screenshot ? 'border-green-500/40 bg-green-500/5' : 'border-white/10 hover:border-red-500/30 bg-white/5'
+            }`}>
+              <input 
+                type="file" 
+                className="absolute inset-0 opacity-0 cursor-pointer z-20" 
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className={`w-16 h-16 rounded-3xl flex items-center justify-center transition-all ${
+                  screenshot ? 'bg-green-500/20 text-green-500' : 'bg-red-500/10 text-red-500 group-hover:scale-110'
+                }`}>
+                  {screenshot ? <Check size={32} /> : <Upload size={32} />}
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    copyToClipboard(referenceId, "Reference")
-                  }
-                >
-                  {copied === "Reference"
-                    ? <Check className="w-4 h-4" />
-                    : <Copy className="w-4 h-4" />}
-                </Button>
+                <div>
+                  <p className="text-lg font-bold text-white">{screenshot ? screenshot.name : "Drop receipt here"}</p>
+                  <p className="text-xs text-zinc-500 font-medium">Max 5MB • JPG, PNG, WEBP</p>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Upload Screenshot */}
-            <div className="space-y-2">
-              <Label>Upload Payment Screenshot</Label>
-
-              <div className="relative border-2 border-dashed border-primary/30 rounded-lg p-6 bg-primary/5 hover:bg-primary/10 transition">
-                <Input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleFileChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-
-                <div className="flex flex-col items-center gap-2 pointer-events-none">
-                  <Upload className="w-8 h-8 text-primary" />
-                  <p className="text-sm font-medium">
-                    Click to upload payment proof
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    PNG, JPG up to 5MB
-                  </p>
-                </div>
-              </div>
-
-              {screenshot && (
-                <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg">
-                  <Check className="w-4 h-4 text-primary" />
-                  <p className="text-sm font-medium">{screenshot.name}</p>
-                </div>
-              )}
-            </div>
-
-            <Button
+          {/* Action */}
+          <div className="pt-4 pb-12">
+            <Button 
+              size="lg" 
               onClick={handlePaymentConfirm}
               disabled={!screenshot || loading}
-              size="lg"
-              className="w-full"
+              className="h-16 text-xl font-black rounded-[1.5rem] group"
             >
-              I Have Made Payment
+              Verify Payment <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
             </Button>
-
-          </CardContent>
-        </Card>
-      </main>
+            <div className="flex items-center justify-center gap-2 mt-6 text-zinc-600">
+              <ShieldCheck size={14} />
+              <span className="text-[10px] font-black uppercase tracking-widest">End-to-End Encryption</span>
+            </div>
+          </div>
+        </main>
+      )}
     </div>
   );
-};
-
-export default PaymentInstructions;
+}
