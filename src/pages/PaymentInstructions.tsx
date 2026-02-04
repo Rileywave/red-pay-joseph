@@ -147,6 +147,14 @@ export default function App() {
     setShowPending(true);
   };
 
+  const handleContactSupport = () => {
+    navigate("/support");
+  };
+
+  const handleGoToDashboard = () => {
+    navigate("/dashboard");
+  };
+
   // ✅ SUB-VIEW: PENDING SCREEN
   if (showPending) {
     return (
@@ -172,7 +180,7 @@ export default function App() {
           </div>
 
           <div className="w-full space-y-4">
-            {/* UNIGNORABLE SUPPORT SECTION */}
+             {/* UNIGNORABLE SUPPORT SECTION */}
             <div className="relative group overflow-hidden rounded-3xl p-1">
               {/* Pulsing Gradient Background */}
               <div className="absolute inset-0 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 animate-pulse opacity-100" />
@@ -188,18 +196,23 @@ export default function App() {
                 </div>
 
                 <Button 
-                  variant="primary" 
-                  size="lg" 
-                  onClick={() => console.log('Support')}
-                  className="w-full bg-amber-500 hover:bg-amber-400 text-black font-black text-lg border-none shadow-xl shadow-amber-500/20 h-14"
+                  onClick={handleContactSupport}
+                  className="w-full bg-amber-500 hover:bg-amber-400 text-black font-black text-lg border-none shadow-xl shadow-amber-500/20 h-14" 
+                  size="lg"
                 >
+                  <span className="mr-2">✈</span>
                   CONTACT SUPPORT NOW
                 </Button>
               </div>
             </div>
 
-            <Button variant="ghost" size="lg" onClick={() => window.location.reload()}>
-              <LayoutDashboard size={20} /> Dashboard
+            <Button 
+              onClick={handleGoToDashboard}
+              variant="ghost"
+              className="w-full h-12 text-zinc-500 hover:text-white" 
+              size="lg"
+            >
+              Go to Dashboard
             </Button>
           </div>
         </Card>
