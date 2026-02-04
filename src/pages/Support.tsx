@@ -5,12 +5,16 @@ import LiquidBackground from "@/components/LiquidBackground";
 import Logo from "@/components/Logo";
 import ProfileButton from "@/components/ProfileButton";
 import LiveChat from "@/components/LiveChat";
-import { Send, Mail, MessagesSquare } from "lucide-react";
+import { MessageCircle, Send, Mail, MessagesSquare } from "lucide-react";
 
 const Support = () => {
   const [liveChatOpen, setLiveChatOpen] = useState(false);
   const handleTelegramSupport = () => {
     window.open("https://t.me/Redpaywebsupport", "_blank");
+  };
+
+  const handleWhatsAppSupport = () => {
+    window.open("https://wa.me/2347019895358", "_blank");
   };
 
   const handleEmailSupport = () => {
@@ -49,7 +53,7 @@ const Support = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6">
           {/* Telegram Support */}
           <Card className="bg-card/60 backdrop-blur-sm border-border animate-fade-in hover-lift float-element">
             <CardContent className="p-6 text-center space-y-4">
@@ -61,6 +65,10 @@ const Support = () => {
                 <p className="text-sm text-muted-foreground">
                   Chat with us on Telegram
                 </p>
+                <div class="flex items-center gap-2 mt-3">
+                  <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <span class="text-sm text-emerald-500">Online Now</span>
+                </div>
               </div>
               <Button
                 onClick={handleTelegramSupport}
@@ -71,8 +79,29 @@ const Support = () => {
             </CardContent>
           </Card>
 
-          {/* Email Support */}
+          {/* WhatsApp Support */}
           <Card className="bg-card/60 backdrop-blur-sm border-border animate-fade-in hover-lift float-element-slow">
+            <CardContent className="p-6 text-center space-y-4">
+              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto">
+                <MessageCircle className="w-8 h-8 text-white" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-lg font-bold text-foreground">WhatsApp</h2>
+                <p className="text-sm text-muted-foreground">
+                  Message us on WhatsApp
+                </p>
+              </div>
+              <Button
+                onClick={handleWhatsAppSupport}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+              >
+                Open WhatsApp
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Email Support */}
+          <Card className="bg-card/60 backdrop-blur-sm border-border animate-fade-in hover-lift float-element-delayed">
             <CardContent className="p-6 text-center space-y-4">
               <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto">
                 <Mail className="w-8 h-8 text-white" />
@@ -101,7 +130,7 @@ const Support = () => {
               24/7 Support - We're here for you around the clock
             </p>
             <p className="text-sm text-muted-foreground mt-4">
-              Average response time: Within a few hours via email, or instantly via Live Chat and Telegram.
+              Average response time: Within a few hours via email, or instantly via Live Chat, WhatsApp, and Telegram.
             </p>
           </CardContent>
         </Card>
