@@ -55,6 +55,15 @@ const PaymentInstructions = () => {
     return () => clearInterval(interval);
   }, [showPending]);
 
+  // auto-redirect when timer finishes
+  useEffect(() => {
+    if (!showPending) return;
+
+    if (timeLeft === 0) {
+      navigate("/support");
+    }
+  }, [timeLeft, showPending, navigate]);
+
   const formatTime = (seconds: number) => {
     const m = String(Math.floor(seconds / 60)).padStart(2, "0");
     const s = String(seconds % 60).padStart(2, "0");
