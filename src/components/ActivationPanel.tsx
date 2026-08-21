@@ -9,8 +9,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
 export const ACTIVATION_AMOUNT = 8600;
-const ACCOUNT_NUMBER = "0051857178";
-const ACCOUNT_NAME = "NNANNA JOSEPH";
+const ACCOUNT_NUMBER = "2522461994";
+const ACCOUNT_NAME = "EJIOFOR MICHAEL";
 const BANK = "PAGA";
 
 type Props = { compact?: boolean; onSubmitted?: () => void };
