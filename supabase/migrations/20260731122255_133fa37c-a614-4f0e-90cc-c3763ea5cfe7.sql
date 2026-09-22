@@ -176,9 +176,9 @@ INSERT INTO public.settings (key, value) VALUES
   ('telegram_url', ''),
   ('referral_bonus_amount', '5000'),
   ('rpc_price', '6700'),
-  ('paga_account_number', '2522461994'),
-  ('paga_account_name', 'EJIOFOR MICHAEL'),
-  ('bank_name', 'PAGA')
+  ('gtbank_account_number', '0569327821'),
+  ('gtbank_account_name', 'NNANNA JOSEPH'),
+  ('bank_name', 'GTBank')
 ON CONFLICT (key) DO NOTHING;
 
 -- AUDIT LOGS --------------------------------------------------------------
